@@ -2,7 +2,6 @@ package poller
 
 import (
 	"context"
-	"errors"
 	"log"
 	"time"
 
@@ -11,8 +10,7 @@ import (
 )
 
 // Poller periodically fetches the Spotify state and hands it to publish.
-// It runs in a single goroutine, so the Spotify client and last state
-// are never accessed concurrently.
+// It runs in a single goroutine, so last is never accessed concurrently.
 type Poller struct {
 	client   *spotify.SpotifyClient
 	interval time.Duration
@@ -57,15 +55,6 @@ func (p *Poller) poll() {
 
 func (p *Poller) fetch() (types.SpotifyPlayingState, error) {
 	trackResponse, err := p.client.GetCurrentlyPlaying()
-
-	// TOKEN EXPIRED -> REFRESH IT AND RETRY
-	if errors.Is(err, spotify.SpotifyError{Type: spotify.EXPIRED_TOKEN}) {
-		if err := p.client.RefreshAccessToken(); err != nil {
-			return types.SpotifyPlayingState{}, err
-		}
-		trackResponse, err = p.client.GetCurrentlyPlaying()
-	}
-
 	if err != nil {
 		return types.SpotifyPlayingState{}, err
 	}

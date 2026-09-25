@@ -13,6 +13,7 @@ import (
 	"github.com/ifonso/streaming-socket-wp/hub"
 	"github.com/ifonso/streaming-socket-wp/poller"
 	"github.com/ifonso/streaming-socket-wp/spotify"
+	"github.com/ifonso/streaming-socket-wp/toptracks"
 )
 
 const pollInterval = 10 * time.Second
@@ -34,6 +35,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ws", h.ServeWs)
+	mux.Handle("/top-tracks", toptracks.New(spotifyClient))
 	server := &http.Server{Addr: ":" + port, Handler: mux}
 
 	go func() {

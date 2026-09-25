@@ -41,6 +41,21 @@ func (st *SpotifyTrack) GetArtistList() []string {
 	return artists
 }
 
+func (st *SpotifyTrack) ConvertToTopTrack(position int) SpotifyTopTrack {
+	// Spotify returns album images widest first.
+	imageUrl := ""
+	if len(st.Album.Images) > 0 {
+		imageUrl = st.Album.Images[0].Url
+	}
+
+	return SpotifyTopTrack{
+		Position: position,
+		Name:     st.Name,
+		Artists:  st.GetArtistList(),
+		ImageUrl: imageUrl,
+	}
+}
+
 func (st *SpotifyTrack) ConvertToMusic() SpotifyMusic {
 
 	return SpotifyMusic{
