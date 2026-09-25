@@ -34,7 +34,7 @@ type SpotifyLink struct {
 }
 
 func (st *SpotifyTrack) GetArtistList() []string {
-	var artists []string
+	artists := make([]string, 0, len(st.Artists))
 	for _, artist := range st.Artists {
 		artists = append(artists, artist.Name)
 	}

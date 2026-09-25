@@ -15,6 +15,7 @@ import (
 const tokenUrl = "https://accounts.spotify.com/api/token"
 const playerUrl = "https://api.spotify.com/v1/me/player/currently-playing"
 
+// SpotifyClient is not safe for concurrent use.
 type SpotifyClient struct {
 	credentials struct {
 		accessToken  string
@@ -63,6 +64,10 @@ func (sc *SpotifyClient) RefreshAccessToken() error {
 	}
 
 	sc.credentials.accessToken = accessData.AccessToken
+	// Spotify may rotate the refresh token.
+	if accessData.RefreshToken != "" {
+		sc.credentials.refreshToken = accessData.RefreshToken
+	}
 
 	return nil
 }
